@@ -1,0 +1,12 @@
+services:
+  user-service:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    ports:
+      - "7001:80"
+
+  product-service:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    ports:
+      - "7002:80"

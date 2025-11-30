@@ -3,27 +3,18 @@ services:
     image: postgres:15
     container_name: innoshop_postgres
     environment:
-      POSTGRES_MULTIPLE_DATABASES: "UserService,ProductService"
-      POSTGRES_DB: InnoShop
+      POSTGRES_DB: ProductService
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-
-  user-service:
-    build:
-      context: .
-      dockerfile: UserService/UserService.API/Dockerfile
-    container_name: user_service_api
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=UserService;Username=postgres;Password=password;
-    ports:
-      - "7001:80"
-    depends_on:
-      - postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   product-service:
     build:
@@ -31,12 +22,13 @@ services:
       dockerfile: ProductService/ProductService.API/Dockerfile
     container_name: product_service_api
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Docker
       - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=ProductService;Username=postgres;Password=password;
     ports:
       - "7002:80"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
 volumes:
   postgres_data:

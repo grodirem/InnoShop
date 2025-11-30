@@ -1,0 +1,16 @@
+﻿using Microsoft.Extensions.DependencyInjection;
+using UserService.Application.Interfaces;
+using UserService.Application.Services;
+
+namespace UserService.Application;
+
+public static class DependencyInjection
+{
+    public static IServiceCollection AddApplication(this IServiceCollection services)
+    {
+        services.AddScoped<IUserManagementService, UserManagementService>();
+        services.AddScoped<IAuthService, AuthService>();
+
+        return services;
+    }
+}
